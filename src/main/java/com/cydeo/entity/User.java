@@ -4,10 +4,13 @@ import com.cydeo.enums.Gender;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Data
+@Entity
+@Table(name = "users")
 public class User extends BaseEntity {
 
     private String firstName;
@@ -16,7 +19,10 @@ public class User extends BaseEntity {
     private String passWord;
     private boolean enabled;
     private String phone;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
     private Role role;
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     public User(Long id, LocalDateTime insertDateTime, Long insertUserId, LocalDateTime lastUpdateDateTime, Long lastUpdateUserId, String firstName, String lastName, String userName, String passWord, boolean enabled, String phone, Role role, Gender gender) {
