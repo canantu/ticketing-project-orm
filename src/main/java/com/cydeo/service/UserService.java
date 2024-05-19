@@ -3,11 +3,18 @@ package com.cydeo.service;
 import com.cydeo.dto.UserDTO;
 
 import java.util.List;
+public interface UserService {
 
-public interface UserService extends CrudService<UserDTO, String> {
 
-    List<UserDTO> findManagers();
+    List<UserDTO> listAllUsers();
+    UserDTO findByUserName(String username);
 
-    List<UserDTO> findEmployees();
+    void save(UserDTO user);
+    UserDTO update(UserDTO user);
+    void deleteByUserName(String username);
+    void delete(String username);
 
+    UserDTO findById(String username);
+
+    Object findEmployees();
 }
