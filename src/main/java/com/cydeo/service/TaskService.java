@@ -1,19 +1,15 @@
 package com.cydeo.service;
 
 import com.cydeo.dto.TaskDTO;
-import com.cydeo.dto.UserDTO;
-import com.cydeo.enums.Status;
 
 import java.util.List;
 
-public interface TaskService extends CrudService<TaskDTO, Long> {
+public interface TaskService {
 
-    List<TaskDTO> findTasksByManager(UserDTO manager);
-
-    List<TaskDTO> findAllTasksByStatus(Status status);
-
-    List<TaskDTO> findAllTasksByStatusIsNot(Status status);
-
-    void updateStatus(TaskDTO task);
+    TaskDTO findById(Long id);
+    List<TaskDTO> listAllTasks();
+    void save(TaskDTO dto);
+    void update(TaskDTO dto);
+    void delete(Long id);
 
 }
