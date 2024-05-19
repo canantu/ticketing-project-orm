@@ -1,7 +1,6 @@
 package com.cydeo.entity;
 
 import com.cydeo.enums.Status;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +17,7 @@ import java.time.LocalDate;
 @Where(clause = "is_deleted=false")
 public class Project extends BaseEntity{
 
-
+    @Column(unique = true)
     private String projectCode;
     private String projectName;
     @ManyToOne(fetch = FetchType.LAZY)

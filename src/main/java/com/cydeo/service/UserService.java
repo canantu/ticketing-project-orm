@@ -1,6 +1,7 @@
 package com.cydeo.service;
 
 import com.cydeo.dto.UserDTO;
+import com.cydeo.entity.Role;
 
 import java.util.List;
 public interface UserService {
@@ -16,5 +17,7 @@ public interface UserService {
 
     UserDTO findById(String username);
 
-    Object findEmployees();
+    UserDTO findEmployees();
+
+    List<UserDTO> listAllByRole(String role);
 }

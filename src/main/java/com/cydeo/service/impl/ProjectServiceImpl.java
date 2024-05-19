@@ -3,7 +3,10 @@ package com.cydeo.service.impl;
 import com.cydeo.dto.ProjectDTO;
 import com.cydeo.dto.TaskDTO;
 import com.cydeo.dto.UserDTO;
+import com.cydeo.entity.Project;
 import com.cydeo.enums.Status;
+import com.cydeo.mapper.ProjectMapper;
+import com.cydeo.repository.ProjectRepository;
 import com.cydeo.service.ProjectService;
 import com.cydeo.service.TaskService;
 import org.springframework.stereotype.Service;
@@ -13,86 +16,52 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class ProjectServiceImpl extends AbstractMapService<ProjectDTO, String> implements ProjectService {
+public class ProjectServiceImpl implements ProjectService {
 
-    private final TaskService taskService;
+    private final ProjectRepository projectRepository;
+    private final ProjectMapper projectMapper;
 
-    public ProjectServiceImpl(TaskService taskService) {
-        this.taskService = taskService;
+    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper) {
+        this.projectRepository = projectRepository;
+        this.projectMapper = projectMapper;
     }
 
     @Override
-    public ProjectDTO save(ProjectDTO object) {
-
-        if (object.getProjectStatus() == null) {
-            object.setProjectStatus(Status.OPEN);
-        }
-
-        return super.save(object.getProjectCode(), object);
+    public ProjectDTO getByProjectCode(String code) {
+        return projectMapper.convertToDto(projectRepository.findByProjectCode(code));
     }
 
     @Override
-    public List<ProjectDTO> findAll() {
-        return super.findAll();
+    public List<ProjectDTO> listAllProjects() {
+        List<Project> projectList = projectRepository.findAll();
+        return projectList.stream().map(projectMapper::convertToDto).collect(Collectors.toList());
     }
 
     @Override
-    public void update(ProjectDTO object) {
-
-        ProjectDTO newproject = findById(object.getProjectCode());
-
-        if (object.getProjectStatus() == null)
-            object.setProjectStatus(newproject.getProjectStatus());
-        super.update(object.getProjectCode(), object);
+    public void save(ProjectDTO dto) {
+        dto.setProjectStatus(Status.OPEN);  // it is not in the form, so while saving, we need to first set status
+        projectRepository.save(projectMapper.convertToEntity(dto));
     }
 
     @Override
-    public void deleteById(String id) {
-        super.deleteById(id);
+    public void update(ProjectDTO dto) {
+
     }
 
     @Override
-    public ProjectDTO findById(String id) {
-        return super.findById(id);
+    public void delete(String code) {
+        Project project = projectRepository.findByProjectCode(code);
+        project.setIsDeleted(true);
+        projectRepository.save(project);
     }
 
     @Override
-    public void complete(ProjectDTO project) {
+    public void complete(String projectCode) {
+
+        Project project = projectRepository.findByProjectCode(projectCode);
         project.setProjectStatus(Status.COMPLETE);
-        super.save(project.getProjectCode(), project);
+        projectRepository.save(project);
     }
-
-    @Override
-    public List<ProjectDTO> findAllNonCompletedProjects() {
-        return findAll().stream().filter(project -> !project.getProjectStatus().equals(Status.COMPLETE)).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ProjectDTO> getCountedListOfProjectDTO(UserDTO manager) {
-
-        List<ProjectDTO> projectList =
-                findAll()
-                        .stream()
-                        .filter(project -> project.getAssignedManager().equals(manager))
-                        .map(project -> {
-
-                            List<TaskDTO> taskList = taskService.findTasksByManager(manager);
-
-                            int completeTaskCounts = (int) taskList.stream().filter(t -> t.getProject().equals(project) && t.getTaskStatus() == Status.COMPLETE).count();
-
-                            int unfinishedTaskCounts = (int) taskList.stream().filter(t -> t.getProject().equals(project) && t.getTaskStatus() != Status.COMPLETE).count();
-
-                            project.setCompleteTaskCounts(completeTaskCounts);
-                            project.setUnfinishedTaskCounts(unfinishedTaskCounts);
-
-                            return project;
-
-                        }).collect(Collectors.toList());
-
-
-        return projectList;
-    }
-
 }
 
 
