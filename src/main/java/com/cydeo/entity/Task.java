@@ -19,8 +19,10 @@ public class Task extends BaseEntity {
 
     private String taskSubject;
     private String taskDetail;
+
     @Enumerated(EnumType.STRING)
     private Status taskStatus;
+
     @Column(columnDefinition = "DATE" )
     private LocalDate assignedDate;
 
