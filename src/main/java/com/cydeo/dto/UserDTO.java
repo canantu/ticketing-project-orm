@@ -8,7 +8,7 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Data
+
 public class UserDTO {
 
     private Long id;
@@ -16,6 +16,14 @@ public class UserDTO {
     @NotBlank
     @Size(max = 15, min = 2)
     private String firstName;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @NotBlank
     @Size(max = 15, min = 2)

@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Where(clause = "is_deleted=false")
-public class Project extends BaseEntity{
+public class Project extends BaseEntity {
 
     @Column(unique = true)
     private String projectCode;
@@ -36,5 +36,6 @@ public class Project extends BaseEntity{
 
     @Enumerated(EnumType.STRING)
     private Status projectStatus;
+
 
 }
