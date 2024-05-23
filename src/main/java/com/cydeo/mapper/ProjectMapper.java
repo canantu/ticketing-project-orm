@@ -14,11 +14,14 @@ public class ProjectMapper {
         this.modelMapper = modelMapper;
     }
 
-    public ProjectDTO convertToDto(Project entity){
-        return modelMapper.map(entity, ProjectDTO.class);
+    public Project convertToEntity(ProjectDTO dto){
+
+        return modelMapper.map(dto,Project.class);
+
     }
 
-    public Project convertToEntity(ProjectDTO dto){
-        return modelMapper.map(dto, Project.class);
+    public ProjectDTO convertToDto(Project entity){
+
+        return modelMapper.map(entity,ProjectDTO.class);
     }
 }
