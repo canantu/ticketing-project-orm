@@ -79,12 +79,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteByProject(ProjectDTO project) {
-        List<TaskDTO> list = listAllByProject(project);
+        List<TaskDTO> list = _listAllByProject(project);
         list.forEach(taskDTO -> delete(taskDTO.getId()));
     }
 
     public void completeByProject(ProjectDTO project) {
-        List<TaskDTO> list = listAllByProject(project);
+        List<TaskDTO> list = _listAllByProject(project);
         list.forEach(taskDTO -> {
             taskDTO.setTaskStatus(Status.COMPLETE);
             update(taskDTO);
@@ -140,9 +140,10 @@ public class TaskServiceImpl implements TaskService {
         return taskList.stream().map(taskMapper::convertToDto).collect(Collectors.toList());
 
     }
-    private List<TaskDTO> listAllByProject(ProjectDTO project) {
+    private List<TaskDTO> _listAllByProject(ProjectDTO project) {
         List<Task> list = taskRepository.findAllByProject(projectMapper.convertToEntity(project));
         return list.stream().map(taskMapper::convertToDto).collect(Collectors.toList());
     }
+
 
 }
