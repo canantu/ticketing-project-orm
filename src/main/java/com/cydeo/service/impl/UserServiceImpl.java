@@ -1,11 +1,16 @@
 package com.cydeo.service.impl;
 
+import com.cydeo.dto.ProjectDTO;
+import com.cydeo.dto.TaskDTO;
 import com.cydeo.dto.UserDTO;
 import com.cydeo.entity.Role;
 import com.cydeo.entity.User;
 import com.cydeo.mapper.UserMapper;
 import com.cydeo.repository.UserRepository;
+import com.cydeo.service.ProjectService;
+import com.cydeo.service.TaskService;
 import com.cydeo.service.UserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,10 +21,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ProjectService projectService;
+    private final TaskService taskService;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, @Lazy ProjectService projectService, @Lazy TaskService taskService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.projectService = projectService;
+        this.taskService = taskService;
     }
 
     @Override
@@ -52,28 +61,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteByUserName(String username) {
-
-        userRepository.deleteByUserName(username);
-
-    }
-
-    @Override
     public void delete(String username) {
         // not delete from db, set isDeleted=true
         User user = userRepository.findByUserName(username);
-        user.setIsDeleted(true);
-        userRepository.save(user);
+        if (_checkIfUserCanBeDeleted(user)){
+            user.setIsDeleted(true);
+            user.setUserName(user.getUserName() + "-" + user.getId());
+            userRepository.save(user);
+        }
     }
 
-    @Override
-    public UserDTO findById(String username) {
-        return null;
-    }
+    private boolean _checkIfUserCanBeDeleted(User user){
+        switch (user.getRole().getDescription()){
+            case "Manager":
+                List<ProjectDTO> projectDTOList = projectService.readAllByAssignedManager(user);
+                return projectDTOList.isEmpty();
+            case "Employee":
+                List<TaskDTO> taskDTOList = taskService.readAllByAssignedEmployee(user);
+                return taskDTOList.isEmpty();
+            default:
+                return true;
 
-    @Override
-    public UserDTO findEmployees() {
-        return null;
+        }
     }
 
     @Override

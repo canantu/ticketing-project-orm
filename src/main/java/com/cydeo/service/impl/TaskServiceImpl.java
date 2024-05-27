@@ -83,10 +83,12 @@ public class TaskServiceImpl implements TaskService {
         list.forEach(taskDTO -> delete(taskDTO.getId()));
     }
 
-    @Override
-    public void completeByProject(ProjectDTO projectDTO) {
-        List<TaskDTO> list = listAllByProject(projectDTO);
-
+    public void completeByProject(ProjectDTO project) {
+        List<TaskDTO> list = listAllByProject(project);
+        list.forEach(taskDTO -> {
+            taskDTO.setTaskStatus(Status.COMPLETE);
+            update(taskDTO);
+        });
     }
 
     @Override
@@ -114,6 +116,11 @@ public class TaskServiceImpl implements TaskService {
         User convertedUser = userMapper.convertToEntity(userDTO);
         List<Task> taskList = taskRepository.findAllByTaskStatusAndAssignedEmployee(status, convertedUser);
         return taskList.stream().map(taskMapper::convertToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TaskDTO> readAllByAssignedEmployee(User assignedEmployee) {
+        return taskRepository.findAllByAssignedEmployee(assignedEmployee).stream().map(taskMapper::convertToDto).collect(Collectors.toList());
     }
 
 
