@@ -26,7 +26,7 @@ public class Task extends BaseEntity {
     @Column(columnDefinition = "DATE" )
     private LocalDate assignedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
